@@ -52,9 +52,9 @@ export const docs = ({ mdcontent, slug, lvl0Title }: DocsType) => {
 
     // console.log(dom.window.document.documentElement);
 
-    writeFileSync(path.join(process.cwd(), "./src/text.html"), htmlString);
+    writeFileSync(path.join(process.cwd(), "./test/text.html"), htmlString);
     // writeFileSync(
-    //     path.join(process.cwd(), "./src/text.json"),
+    //     path.join(process.cwd(), "./test/text.json"),
     //     JSON.stringify(dom)
     // );
     return {};

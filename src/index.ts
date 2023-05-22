@@ -15,7 +15,7 @@ export function hello() {
     }
     if (__DEV__) {
         const mdcontent = readFileSync(
-            path.join(process.cwd(), "./src/test.md"),
+            path.join(process.cwd(), "./test/test.md"),
             "utf-8"
         );
         docs({
