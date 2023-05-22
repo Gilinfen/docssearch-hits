@@ -1,0 +1,357 @@
+<h1>Electron 基础教程</h1>
+<h2><a href="https://electronjs.org">Electron</a>是什么 ?</h2>
+<blockquote>
+<p>官方给出的解释：使用 JavaScript, HTML 和 CSS 构建跨平台的桌面应用。讲的再通俗一点就是 node + <strong>Chromium(没有自带功能的 chrome)</strong> + 前端三巨头组成的<strong>开发工具</strong>。</p>
+</blockquote>
+<p><img src="https://picgo-any.oss-cn-shanghai.aliyuncs.com/img/202301301900315.png" alt="electron" title="electron"><br>
+<small>图片非原创，取自网络</small></p>
+<h2>为什么要用 Electron?</h2>
+<blockquote>
+<p>官网： Electron 是一个使用 JavaScript, HTML 和 CSS 等 Web 技术创建原生程序的框架，它负责比较难搞的部分，你只需把精力放在你的应用的<strong>核心</strong>上即可。 对我们来说 Electron 的核心就是我们的表现层（HTML + CSS + Javascript）。 最重要的一点：<strong>前端工程师可以直接进入 GUI 开发领域</strong> 所有的调试就可以有 pc 网站一样的体验,而且无视任何兼容性问题，只需要针对 chrome 开发。</p>
+</blockquote>
+<h2>Electron 入门</h2>
+<blockquote>
+<p>Electron 入门非常的简单，就算你从来没有过任何客户端开发的经验。只要你会用 NPM，会前端，都可以非常快速的新建一个 ELectron,<a href="https://electron.org.cn/demo.html">教程传送门</a>。</p>
+</blockquote>
+<p><img src="https://picgo-any.oss-cn-shanghai.aliyuncs.com/img/202301301900738.png" alt="electron" title="electron"></p>
+<h2>Electron-React</h2>
+<p>模版</p>
+<ul>
+<li><a href="https://github.com/chentsulin/electron-react-boilerplate">electron-react-boilerplate</a> --------- <a href="https://electron-react-boilerplate.js.org/docs/installation">文档</a></li>
+</ul>
+<h2>Electron-vue</h2>
+<p>模版</p>
+<ul>
+<li><a href="https://github.com/cawa-93/vite-electron-builder">vite-electron-builder</a></li>
+</ul>
+<blockquote>
+<p>这是一个基于 Electron + Vue 的框架，他的作用是其实是让我们能够用 vue 去开发前端部分。我们自己就省去了框架融合的这一部分，起步也很简单。</p>
+</blockquote>
+<p>如果是在 windows 的环境下，还需要注意一下这些<strong>问题</strong></p>
+<ul>
+<li>node-gyp 错误：这个一般是系统上的构建工具(Python,VisualStudio)的问题，我建议 windows 用户都安装一下这个东西。</li>
+<li>npm 版本问题：保证 npm 一定要是最新的版本，推荐使用 yarn</li>
+<li>构建工具打包处理：windows-build-tools 来为我们完成大部分烦人的工作。全局安装此工具将依次设置 Visual C++ 软件包、Python 等等。<br>
+该弄的都弄完了，就可以敲代码了</li>
+</ul>
+<pre><code class="language-bash"># 安装 vue-cli 和 脚手架样板代码
+npm install -g vue-cli
+vue init simulatedgreg/electron-vue my-project
+
+# 安装依赖并运行你的程序
+cd my-project
+yarn # 或者 npm install
+yarn run dev # 或者 npm run dev
+</code></pre>
+<h2>Electron 进程</h2>
+<blockquote>
+<p>Electron 分为两个进程。一个是主进程，一个是渲染进程。主进程主要负责的是 GUI 部分的构建。渲染进程就是负责页面显示部分的构建了。</p>
+</blockquote>
+<h3>主进程</h3>
+<p>使用 BrowserWindow 实例创建页面。 每个 BrowserWindow 实例都在自己的渲染进程里运行页面。 当一个 BrowserWindow 实例被销毁后，相应的渲染进程也会被终止。所谓的主进程在程序中直接的表现就是我们的入口文件，启动程序的时候首先在 package.json 中找到入口文件的地址</p>
+<pre><code class="language-bash">{
+  &quot;main&quot;: &quot;./dist/electron/main.js&quot;,
+}
+</code></pre>
+<p>然后执行具体的代码,主进程主要是负责调用沙盒环境内也就是计算机或者是 Node 层面的东西</p>
+<pre><code class="language-js">var app = require(&quot;app&quot;); // 控制应用生命周期的模块。
+var BrowserWindow = require(&quot;browser-window&quot;); // 创建原生浏览器窗口的模块
+// 保持一个对于 window 对象的全局引用，不然，当 JavaScript 被 GC，
+// window 会被自动地关闭
+var mainWindow = null;
+// 当 Electron 完成了初始化并且准备创建浏览器窗口的时候
+// 这个方法就被调用
+app.on(&quot;ready&quot;, function () {
+    // 创建浏览器窗口。
+    mainWindow = new BrowserWindow({
+        useContentSize: true,
+        height: 768,
+        minHeight: 600,
+        width: 1360,
+        minWidth: 1365,
+        show: false, //
+        frame: false, // 无边框桌面
+    });
+    // 加载html
+    mainWindow.loadURL(&quot;file://&quot; + __dirname + &quot;/index.html&quot;);
+});
+</code></pre>
+<p>这样就创建了一个 electron 程序</p>
+<h3>渲染进程</h3>
+<blockquote>
+<p>主进程管理所有的 web 页面和它们对应的渲染进程。 每个渲染进程都是独立的，它只关心它所运行的 web 页面。渲染进程没什么可讲的</p>
+</blockquote>
+<h2>主进程和渲染进程的<strong>通讯</strong></h2>
+<blockquote>
+<p>在任何一个框架或者语言中通信都是相对重要的部分。ELectron 也不例外</p>
+</blockquote>
+<ul>
+<li>进程间共享数据：在主程序和渲染程序中都可以使用得数据。<br>
+Electron 提供 IPC 系统共享数据</li>
+</ul>
+<pre><code class="language-js">// 在主进程里
+global.sharedObject = {
+    someProperty: &quot;default value&quot;,
+};
+
+// In page 1.
+require(&quot;remote&quot;).getGlobal(&quot;sharedObject&quot;).someProperty = &quot;new value&quot;;
+// In page 2.
+console.log(require(&quot;remote&quot;).getGlobal(&quot;sharedObject&quot;).someProperty);
+</code></pre>
+<ul>
+<li>
+<p>不同页面间共享数据: Storage IndexDB 都可以</p>
+</li>
+<li>
+<p>Electron 的通信: 主要是通过发布/监听的模式来实现的，和 vue 中父子组件通信的 emit 和 on 有点类似</p>
+</li>
+</ul>
+<p><strong><a href="https://electronjs.org/docs/api/ipc-main">ipcMain</a></strong>: ipcMain 模块是 EventEmitter 类的一个实例。 当在主进程中使用时，它处理从渲染器进程（网页）发送出来的异步和同步信息。 从渲染器进程发送的消息将被发送到该模块。</p>
+<p>发送消息时，事件名称为 channel。</p>
+<p>回复同步信息时，需要设置 event.returnValue。</p>
+<p>将异步消息发送回发件人，需要使用 event.sender.send(…)。</p>
+<pre><code class="language-js">// 在主进程中.
+const { ipcMain } = require(&quot;electron&quot;);
+ipcMain.on(&quot;asynchronous-message&quot;, (event, arg) =&gt; {
+    console.log(arg); // prints &quot;ping&quot;
+    event.sender.send(&quot;asynchronous-reply&quot;, &quot;pong&quot;);
+});
+
+ipcMain.on(&quot;synchronous-message&quot;, (event, arg) =&gt; {
+    console.log(arg); // prints &quot;ping&quot;
+    event.returnValue = &quot;pong&quot;;
+});
+</code></pre>
+<p><strong><a href="https://electronjs.org/docs/api/ipc-renderer">ipcRender</a></strong>：ipcRenderer 是一个 EventEmitter 的实例。 你可以使用它提供的一些方法从渲染进程 (web 页面) 发送同步或异步的消息到主进程。 也可以接收主进程回复的消息。 这个是在渲染进程中使用得通信模块</p>
+<pre><code class="language-js">// 主进程中监听事件 'maximize'
+mainWindow.on(&quot;maximize&quot;, (event, arg) =&gt; {
+    event.sender.send(&quot;maxPage&quot;, &quot;max&quot;);
+});
+//在渲染器进程 (网页) 中。
+const { ipcRenderer } = require(&quot;electron&quot;);
+ipcRenderer.send(&quot;maximize&quot;);
+</code></pre>
+<h2>在 Electron 中使用 Node.js</h2>
+<blockquote>
+<p>Electron 同样也支持 Node 原生模块，但由于和官方的 Node 相比使用了不同的 V8 引擎，如果你想编译原生模块，则需要手动设置 Electron 的 headers 的位置。 这一步配置好环境之后一般没什么大问题</p>
+</blockquote>
+<p>有三种方法去安装原生模块</p>
+<ol>
+<li><strong>通过 npm 安装</strong><br>
+只要设置一些系统环境变量，你就可以通过 npm 直接安装原生模块。<br>
+为 Electron 安装所有依赖项:</li>
+</ol>
+<pre><code class="language-bash"># Electron 的版本。
+export npm_config_target=1.2.3
+# Electron 的系统架构, 值为 ia32 或者 x64。
+export npm_config_arch=x64
+export npm_config_target_arch=x64
+# 下载 Electron 的 headers。
+export npm_config_disturl=https://atom.io/download/electron
+# 告诉 node-pre-gyp 是为 Electron 构建。
+export npm_config_runtime=electron
+# 告诉 node-pre-gyp 从源代码构建模块。
+export npm_config_build_from_source=true
+# 下载所有依赖，并缓存到 ~/.electron-gyp。
+HOME=~/.electron-gyp npm install
+</code></pre>
+<ol start="2">
+<li><strong>为 Electron 安装并重新编译模块</strong><br>
+你可以也选择安装其他 Node 项目模块一样，然后用 electron-rebuild 包重建 Electron 模块 。 它可以识别当前 Electron 版本，帮你自动完成了下载 headers、编译原生模块等步骤。</li>
+</ol>
+<pre><code class="language-bash">npm install --save-dev electron-rebuild
+
+# 每次运行&quot;npm install&quot;时，也运行这条命令
+./node_modules/.bin/electron-rebuild
+
+# 在windows下如果上述命令遇到了问题，尝试这个：
+.\node_modules\.bin\electron-rebuild.cmd
+</code></pre>
+<ol start="3">
+<li><strong>为 Electron 手动编译</strong><br>
+如果你是一个原生模块的开发人员，想在 Electron 中进行测试， 你可能要手动编译 Electron 模块。 你可以 使用 <code>node-gyp</code> 直接编译：</li>
+</ol>
+<pre><code class="language-bash">cd /path-to-module/
+HOME=~/.electron-gyp node-gyp rebuild --target=1.2.3 --arch=x64 --dist-url=https://atom.io/download/electron
+</code></pre>
+<h2>Electron 打包</h2>
+<blockquote>
+<p>做程序打包时比较重要的一个部分目前比较流行的打包库：Electron-packager Electron-builder 我们用的时 Electron-builder 今天主要来讲 Electron-builder</p>
+</blockquote>
+<p>相对于 packager builder 更简单 API 更加友好 而且 builder 可以直接生成安装包，builder 中生成的是已经编译完的代码</p>
+<p>下面给出来一个最简单的例子(package.json 简单配置)</p>
+<pre><code class="language-bash">yarn add electron-builder --dev
+</code></pre>
+<pre><code class="language-bash">
+&quot;scripts&quot;: {
+    &quot;builder&quot;: &quot;electron-builder&quot;// 简单打包命令
+},
+&quot;build&quot;: {
+    &quot;appId&quot;: &quot;com.leon.HelloWorld02&quot;,//包名
+    &quot;copyright&quot;:&quot;LEON&quot;,//版权
+    &quot;productName&quot;:&quot;HelloWorld02&quot;,//项目名
+    &quot;dmg&quot;:{  // mac打包选项
+      &quot;background&quot;:&quot;res/background.png&quot;,//背景图片路径
+      &quot;window&quot;:{
+        //窗口左上角起始坐标
+        &quot;x&quot;:100,
+        &quot;y&quot;:100,
+        //窗口大小
+        &quot;width&quot;:500,
+        &quot;height&quot;:300
+      }
+    },
+    &quot;files&quot;: [ // 需要打包的文件
+      &quot;dist/electron/**/*&quot;
+    ],
+    &quot;win&quot;: {
+        &quot;icon&quot;: &quot;res/icon.ico&quot;,//图标路径
+        &quot;target&quot;: [ // 构建目标
+          &quot;nsis&quot;, // 这个指的就是安装包
+          &quot;zip&quot; // 这个是压缩包
+        ]
+    }
+  }
+
+</code></pre>
+<p>:::warning<br>
+注意：在程序打包得这一项中复杂得地方不在代码，是在我们环境的配置中，有一部分的包我们要科学上网之后才能下载，例如 nsis-resources-3.3.0：翻墙后下载两次才成功，这个过程中一定耐性</p>
+<p>:::</p>
+<p>这里有一个更加详细的<a href="/page/Electron/1-base/1-electron-builder.md">教程</a></p>
+<h2>程序更新</h2>
+<blockquote>
+<p>在 Electron 的整个开发中，程序的更新可能是相对麻烦点的一部分<br>
+目前 Electron 程序的更新方式还是很开放的</p>
+</blockquote>
+<ol>
+<li>替换 html 文件更新，这个比较节约资源，但是并不适用我们用 builder 打包出来的程序</li>
+<li>替换 asar 文件,这个比较小众</li>
+<li>electron-builder + electron-updater 实现全量更新，我们主要讲一讲这个部分。<strong>这个更新的机制按照我的理解是生成一个新的安装包然后和一个 last.yml 配置文件，触发更新事件之后读取线上的包的配置文件，然后比对当当前程序中的程序的版本号，然后再选择更新不更新。</strong></li>
+</ol>
+<ul>
+<li>
+<p>electron-builder 配置模块</p>
+<p>这个配置主要是在打包前在<em>package.json</em>中配置</p>
+<pre><code class="language-bash">&quot;build&quot;: {
+    &quot;productName&quot;: &quot;项目名&quot;,
+    &quot;appId&quot;: &quot;org.simulatedgreg.xxx.xxx-exe&quot;, // appID
+    &quot;directories&quot;: {
+      &quot;output&quot;: &quot;build&quot;
+    },
+    &quot;publish&quot;: [ // 这个配置会生成latest.yml文件，用于自动更新的配置信息；
+      {
+        &quot;provider&quot;: &quot;generic&quot;,
+        &quot;url&quot;: &quot;http://appupdate.xxx.xxx.cn/&quot; // 更新地址 这个很重要
+      }
+    ]
+  },
+</code></pre>
+</li>
+<li>
+<p>代码模块</p>
+<p>主进程中代码</p>
+<pre><code class="language-js">// 注意这个autoUpdater不是electron中的autoUpdater
+import { autoUpdater } from &quot;electron-updater&quot;;
+import config from &quot;../renderer/config/index&quot;;
+const uploadUrl =
+    process.env.NODE_ENV === &quot;development&quot;
+        ? config.dev.env.UPLOAD_URL
+        : config.build.env.UPLOAD_URL;
+// 检测更新，在你想要检查更新的时候执行，renderer事件触发后的操作自行编写
+function updateHandle() {
+    let message = {
+        appName: &quot;XXXX&quot;,
+        error: {
+            key: &quot;0&quot;, //更新出错
+            msg: &quot;更新出错&quot;,
+        },
+        checking: {
+            key: &quot;1&quot;, //检查更新中
+            msg: &quot;检查更新中...&quot;,
+        },
+        updateAva: {
+            key: &quot;2&quot;, //更新可用
+            msg: &quot;有新版本可用&quot;,
+        },
+        updateNotAva: {
+            key: &quot;3&quot;, //已是最新版本
+            msg: &quot;已是最新版本&quot;,
+        },
+        updated: {
+            key: &quot;4&quot;, //安装包已下载完成
+            msg: &quot;安装包已下载完成&quot;,
+        },
+    };
+    autoUpdater.setFeedURL(uploadUrl);
+    autoUpdater.autoDownload = false; // 取消自动下载更新 如果不设置的话 发现新版本会自动进行下载 体验很不好
+    autoUpdater.on(&quot;error&quot;, function (error) {
+        sendUpdateMessage(message.error);
+    });
+    //当开始检查更新的时候触发
+    autoUpdater.on(&quot;checking-for-update&quot;, function () {
+        sendUpdateMessage(message.checking);
+    });
+    //当发现一个可用更新的时候触发，更新包下载会自动开始
+    autoUpdater.on(&quot;update-available&quot;, function (info) {
+        console.log(info.version);
+        sendUpdateMessage(message.updateAva);
+        return false;
+    });
+    //开始下载
+    ipcMain.on(&quot;begin-download&quot;, (event, arg) =&gt; {
+        console.log(&quot;begin download&quot;);
+        autoUpdater.downloadUpdate();
+    });
+    //当没有可用更新的时候触发
+    autoUpdater.on(&quot;update-not-available&quot;, function (info) {
+        sendUpdateMessage(message.updateNotAva);
+    });
+    // 更新下载进度事件
+    autoUpdater.on(&quot;download-progress&quot;, function (progressObj) {
+        mainWindow.webContents.send(&quot;downloadProgress&quot;, progressObj);
+    });
+    /**
+     *  event Event
+     *  releaseNotes String - 新版本更新公告
+     *  releaseName String - 新的版本号  在Windows中只有这个可用
+     *  releaseDate Date - 新版本发布的日期
+     *  updateURL String - 更新地址
+     * */
+    autoUpdater.on(
+        &quot;update-downloaded&quot;,
+        function (
+            event,
+            releaseNotes,
+            releaseName,
+            releaseDate,
+            updateUrl,
+            quitAndUpdate
+        ) {
+            // 发送已存在安装包的信息
+            mainWindow.webContents.send(&quot;downloaded&quot;, message.updated);
+            // 离开并安装
+            ipcMain.on(&quot;bengin-install&quot;, () =&gt; {
+                autoUpdater.quitAndInstall();
+            });
+        }
+    );
+    ipcMain.on(&quot;checkForUpdate&quot;, () =&gt; {
+        //执行自动更新检查
+        autoUpdater.checkForUpdates();
+    });
+}
+// 通过main进程发送事件给renderer进程，提示更新信息
+function sendUpdateMessage(text) {
+    mainWindow.webContents.send(&quot;update_msg&quot;, text);
+}
+</code></pre>
+<p>然后在渲染进程中触发事件，再多次进行通信就可以完成</p>
+<p>整个的过程如下图</p>
+<p><img src="https://picgo-any.oss-cn-shanghai.aliyuncs.com/img/202301301927248.png" alt="update"></p>
+</li>
+</ul>
+<h2>总结</h2>
+<blockquote>
+<p>上面讲的那些只是 ELectron 的冰山一角，还有很多的模块等着我们去探索和发现。前路漫漫，共同努力。</p>
+</blockquote>
