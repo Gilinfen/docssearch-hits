@@ -1,9 +1,8 @@
 {
-  "name": "docssearch-update",
-  "version": "0.1.0",
-  "description": "基于 semantic-release 的自动化 release rollup项目模板",
-  "author": "CaoMeiYouRen",
-  "private": true,
+  "name": "docssearch-hits",
+  "version": "1.0.8",
+  "description": "基于 markdown-it 解析出 hits 用于上传 algolia",
+  "author": "Glinfen",
   "license": "MIT",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -17,8 +16,13 @@
   "files": [
     "dist"
   ],
+  "keywords": [
+    "algoliasearch",
+    "@docssearch.js",
+    "@docssearch/react"
+  ],
   "engines": {
-    "node": ">=12"
+    "node": ">=16"
   },
   "scripts": {
     "lint": "cross-env NODE_ENV=production eslint src --fix --ext .ts,.js,.cjs,.mjs",
@@ -33,6 +37,10 @@
     "commit": "git add . && git cz",
     "prepare": "husky install"
   },
+  "dependencies": {
+    "htmlparser2": "^9.0.0",
+    "markdown-it": "^13.0.1"
+  },
   "devDependencies": {
     "@commitlint/cli": "^17.6.3",
     "@commitlint/config-conventional": "^17.6.3",
@@ -46,9 +54,11 @@
     "@semantic-release/git": "^10.0.1",
     "@types/debug": "^4.1.7",
     "@types/markdown-it": "^12.2.3",
+    "@types/markdown-it-container": "^2.0.5",
     "@types/node": "^20.2.1",
     "@typescript-eslint/eslint-plugin": "^5.59.6",
     "@typescript-eslint/parser": "^5.59.6",
+    "algoliasearch": "^4.17.0",
     "commitizen": "^4.3.0",
     "conventional-changelog-cli": "^2.2.2",
     "conventional-changelog-cmyr-config": "^2.1.0",
@@ -58,11 +68,9 @@
     "eslint": "^8.40.0",
     "eslint-config-cmyr": "^1.1.28",
     "gray-matter": "^4.0.3",
-    "htmlparser2": "^9.0.0",
     "husky": "^8.0.3",
-    "jsdom": "^22.0.0",
     "lint-staged": "^13.2.2",
-    "markdown-it": "^13.0.1",
+    "markdown-it-container": "^3.0.0",
     "rimraf": "^5.0.1",
     "rollup": "^3.22.0",
     "rollup-plugin-dts": "^5.3.0",
@@ -81,7 +89,7 @@
     "language": "zh"
   },
   "lint-staged": {
-    "*.{js,ts}": [
+    "src/**/*.{js,ts}": [
       "cross-env NODE_ENV=production eslint src *.js --fix --ext .ts,.js",
       "git add"
     ]
