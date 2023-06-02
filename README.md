@@ -1,6 +1,11 @@
 # docssearch-hits
 
-使用方式
+## 安装
+```bash
+npm install docssearch-hits
+```
+
+## 使用方式
 
 ```ts
 import { readFileSync } from 'fs'
